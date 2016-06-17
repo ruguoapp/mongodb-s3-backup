@@ -81,7 +81,7 @@ FILE_NAME="backup-$DATE"
 ARCHIVE_NAME="$FILE_NAME.tar.gz"
 
 # Dump the database
-mongodump --host="$MONGODB_HOST" --authenticationDatabase=admin --username="$MONGODB_USER" --password="$MONGODB_PASSWORD" --archive="$DIR/$ARCHIVE_NAME"
+mongodump --host="$MONGODB_HOST" --authenticationDatabase=admin --username="$MONGODB_USER" --password="$MONGODB_PASSWORD" --archive="$DIR/$ARCHIVE_NAME" --gzip
 
 # Send the file to the backup drive or S3
 
