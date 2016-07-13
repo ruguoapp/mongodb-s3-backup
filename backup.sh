@@ -71,7 +71,7 @@ fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo $DIR
 # Store the current date in YYYY-mm-DD-HHMMSS
-DATE=$(date -u "+%F-%H%M%S")
+DATE=$(date "+%F-%H%M%S")
 FILE_NAME="backup-$DATE"
 ARCHIVE_NAME="$FILE_NAME.tar.gz"
 
