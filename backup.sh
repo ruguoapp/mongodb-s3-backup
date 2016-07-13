@@ -80,5 +80,5 @@ mongodump --host="$MONGODB_HOST" --authenticationDatabase=admin --username="$MON
 
 # Send the file to the backup drive or S3
 
-aws s3 cp $DIR/$ARCHIVE_NAME $S3_PATH
+aws s3 cp $DIR/$ARCHIVE_NAME $S3_PATH/
 rm $DIR/$ARCHIVE_NAME
