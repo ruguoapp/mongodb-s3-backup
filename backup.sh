@@ -22,8 +22,7 @@ OPTIONS:
    -p      Mongodb password
    -k      AWS Access Key
    -s      AWS Secret Key
-   -r      Amazon S3 region
-   -b      Amazon S3 bucket name
+   -o      Amazon S3 path, e.g. s3://bucket_name/folder_name
 EOF
 }
 
@@ -32,10 +31,9 @@ MONGODB_USER=
 MONGODB_PASSWORD=
 AWS_ACCESS_KEY=
 AWS_SECRET_KEY=
-S3_REGION=
-S3_BUCKET=
+S3_PATH=
 
-while getopts “h:u:p:k:s:r:b:” OPTION
+while getopts "h:u:p:k:s:o:" OPTION
 do
   case $OPTION in
     h)
@@ -53,11 +51,8 @@ do
     s)
       AWS_SECRET_KEY=$OPTARG
       ;;
-    r)
-      S3_REGION=$OPTARG
-      ;;
-    b)
-      S3_BUCKET=$OPTARG
+    o)
+      S3_PATH=$OPTARG
       ;;
     ?)
       usage
@@ -66,17 +61,17 @@ do
   esac
 done
 
-#if [[ -z $MONGODB_USER ]] || [[ -z $MONGODB_PASSWORD ]] || [[ -z $S3_REGION ]] || [[ -z $S3_BUCKET ]]
-#then
-#  usage
-#  exit 1
-#fi
+if [[ -z $MONGODB_HOST ]] || [[ -z $S3_PATH ]]
+then
+  usage
+  exit 1
+fi
 
 # Get the directory the script is being run from
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo $DIR
 # Store the current date in YYYY-mm-DD-HHMMSS
-DATE=$(date -u "+%F-%H%M%S")
+DATE=$(date "+%F-%H%M%S")
 FILE_NAME="backup-$DATE"
 ARCHIVE_NAME="$FILE_NAME.tar.gz"
 
@@ -85,5 +80,5 @@ mongodump --host="$MONGODB_HOST" --authenticationDatabase=admin --username="$MON
 
 # Send the file to the backup drive or S3
 
-aws s3 cp $DIR/$ARCHIVE_NAME s3://$S3_BUCKET/
+aws s3 cp $DIR/$ARCHIVE_NAME $S3_PATH/
 rm $DIR/$ARCHIVE_NAME
