@@ -23,6 +23,7 @@ OPTIONS:
    -k      AWS Access Key
    -s      AWS Secret Key
    -o      Amazon S3 path, e.g. s3://bucket_name/folder_name
+   -d      Save to directory instead of archive
 EOF
 }
 
@@ -32,8 +33,9 @@ MONGODB_PASSWORD=
 AWS_ACCESS_KEY=
 AWS_SECRET_KEY=
 S3_PATH=
+ARVHIE=true
 
-while getopts "h:u:p:k:s:o:" OPTION
+while getopts "h:u:p:k:s:o:dt" OPTION
 do
   case $OPTION in
     h)
@@ -53,6 +55,9 @@ do
       ;;
     o)
       S3_PATH=$OPTARG
+      ;;
+    d)
+      ARCHIVE=false
       ;;
     ?)
       usage
@@ -76,9 +81,28 @@ FILE_NAME="backup-$DATE"
 ARCHIVE_NAME="$FILE_NAME.tar.gz"
 
 # Dump the database
-mongodump --host="$MONGODB_HOST" --authenticationDatabase=admin --username="$MONGODB_USER" --password="$MONGODB_PASSWORD" --archive="$DIR/$ARCHIVE_NAME" --gzip
+DUMP_CMD="mongodump --host=$MONGODB_HOST" 
+
+if [ $ARCHIVE = true ]; then
+ DUMP_CMD="$DUMP_CMD --archive=$DIR/$ARCHIVE_NAME --gzip"
+else
+ DUMP_CMD="$DUMP_CMD --out=$DIR/$FILE_NAME"
+fi
+
+if [[ ! -z $MONGODB_USER ]] 
+then
+ DUMP_CMD="$DUMP_CMD --authenticationDatabase=admin --username=$MONGODB_USER --password=$MONGODB_PASSWORD"
+fi
+
+echo $DUMP_CMD
+eval $DUMP_CMD
 
 # Send the file to the backup drive or S3
 
-aws s3 cp $DIR/$ARCHIVE_NAME $S3_PATH/
-rm $DIR/$ARCHIVE_NAME
+if [ $ARCHIVE = true ]; then
+  aws s3 cp $DIR/$ARCHIVE_NAME $S3_PATH/
+  rm $DIR/$ARCHIVE_NAME
+else
+  aws s3 cp $DIR/$FILE_NAME $S3_PATH/$FILE_NAME/ --recursive
+  rm -r $DIR/$FILE_NAME
+fi
