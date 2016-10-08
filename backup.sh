@@ -103,7 +103,7 @@ if [ $ARCHIVE = true ]; then
   aws s3 cp $DIR/$ARCHIVE_NAME $S3_PATH/
   rm $DIR/$ARCHIVE_NAME
 else
-  find $DIR/$FILE_NAME -name _* -exec rename 's/_//' '{}' \;
+  find $DIR/$FILE_NAME -name _* -exec rename 's/_/u/' '{}' \;
   aws s3 cp $DIR/$FILE_NAME $S3_PATH/$FILE_NAME/ --recursive
   rm -r $DIR/$FILE_NAME
 fi
