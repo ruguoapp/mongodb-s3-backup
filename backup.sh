@@ -73,7 +73,7 @@ then
 fi
 
 # Get the directory the script is being run from
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="/tmp"
 echo $DIR
 # Store the current date in YYYY-mm-DD-HHMMSS
 DATE=$(date "+%F-%H%M%S")
