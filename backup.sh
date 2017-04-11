@@ -33,7 +33,7 @@ MONGODB_PASSWORD=
 AWS_ACCESS_KEY=
 AWS_SECRET_KEY=
 S3_PATH=
-ARVHIE=true
+ARCHIVE=true
 
 while getopts "h:u:p:k:s:o:dt" OPTION
 do
@@ -83,7 +83,7 @@ ARCHIVE_NAME="$FILE_NAME.tar.gz"
 # Dump the database
 DUMP_CMD="mongodump --host=$MONGODB_HOST" 
 
-if [ $ARCHIVE = true ]; then
+if [[ $ARCHIVE = true ]]; then
  DUMP_CMD="$DUMP_CMD --archive=$DIR/$ARCHIVE_NAME --gzip"
 else
  DUMP_CMD="$DUMP_CMD --out=$DIR/$FILE_NAME"
@@ -99,7 +99,7 @@ eval $DUMP_CMD
 
 # Send the file to the backup drive or S3
 
-if [ $ARCHIVE = true ]; then
+if [[ $ARCHIVE = true ]]; then
   aws s3 cp $DIR/$ARCHIVE_NAME $S3_PATH/
   rm $DIR/$ARCHIVE_NAME
 else
